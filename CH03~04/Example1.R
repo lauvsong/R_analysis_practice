@@ -79,3 +79,64 @@ lm(attend~ordered_month, data = dodgers)
 lm(attend~ordered_day_of_week, data = dodgers)
 lm(attend~bobblehead, data=dodgers)
 summary(lm(formula=attend~bobblehead, data=dodgers))
+
+nrow(dodgers)
+
+# truncate 함수
+trunc(9.8)
+trunc(10.2)
+
+# repeat 함수
+# length : 길이를 n만큼 만듦
+# times : n번 반복
+rep(1, length=5)
+rep(1, times=5)
+rep(c(1,2), length=5)
+rep(c(1,2), times=5)
+
+c(rep(1, length=54, rep(2,length=27)))
+c(rep(1, length=54), rep(2,length=27))
+
+training_test <- c(rep(1, length=54), rep(2, length=27))
+
+# sample 함수
+# 로또번호 뽑기
+# 섞기
+sample(1:50, 6)
+
+set.seed(1234)
+sample(c(1:10))
+sample(training_test)
+
+dodgers$training_test <- sample(training_test) # random permutation 
+dodgers$training_test <- factor(dodgers$training_test, 
+                                levels=c(1,2), labels=c("TRAIN","TEST"))
+dodgers.train <- subset(dodgers, training_test == "TRAIN")
+View(dodgers.train)
+dodgers.test <- subset(dodgers, training_test=="TEST")
+
+# nrow 함수
+# 행의 수수
+nrow(dodgers.test)
+nrow(dodgers.train)
+
+train.model.fit <- lm(my.model, data=dodgers.train)
+summary(train.model.fit)
+predict(train.model.fit)
+View(dodgers.train)
+
+predict(train.model.fit, newdata=dodgers.test)
+View(dodgers.test)
+dodgers.test$predict_attend <- predict(train.model.fit, newdata=dodgers.test)
+
+# 정확성
+cor(dodgers.test$attend, dodgers.test$predict_attend)
+
+dodgers.plotting.frame <- rbind(dodgers.train,dodgers.test)
+qplot(predict_attend, attend)
+
+with(dodgers.plotting.frame, qplot(predict_attend, attend))
+
+xyplot(attend~predict_attend, data=dodgers.plotting.frame)
+xyplot(attend~predict_attend | training_test, data=dodgers.plotting.frame)
+xyplot(attend~predict_attend | training_test, groups=bobblehead, data=dodgers.plotting.frame)
