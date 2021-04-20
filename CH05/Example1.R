@@ -75,4 +75,3 @@ years.list
 seq(along=years.list)
 working.year.data.frame <- subset(movies, year==2013)
 View(working.year.data.frame)
-
